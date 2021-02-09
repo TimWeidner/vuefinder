@@ -1,47 +1,45 @@
 <template>
-  <q-page class="row items-center justify-evenly">
-    <example-component
-      title="Example component"
-      active
-      :todos="todos"
-      :meta="meta"
-    ></example-component>
+  <q-page class="q-pa-md">
+    <div class="row q-gutter-md">
+      <q-card class="col">
+        <q-card-section>Strength</q-card-section>
+        <q-card-section>{{ attributes.strength }}</q-card-section>
+      </q-card>
+      <q-card class="col">
+        <q-card-section>Dexterity</q-card-section>
+        <q-card-section>{{ attributes.dexterity }}</q-card-section>
+      </q-card>
+      <q-card class="col">
+        <q-card-section>Constitution</q-card-section>
+        <q-card-section>{{ attributes.constitution }}</q-card-section>
+      </q-card>
+      <q-card class="col">
+        <q-card-section>Intelligence</q-card-section>
+        <q-card-section>{{ attributes.intelligence }}</q-card-section>
+      </q-card>
+      <q-card class="col">
+        <q-card-section>Wisdom</q-card-section>
+        <q-card-section>{{ attributes.wisdom }}</q-card-section>
+      </q-card>
+      <q-card class="col">
+        <q-card-section>Charisma</q-card-section>
+        <q-card-section>{{ attributes.charisma }}</q-card-section>
+      </q-card>
+    </div>
   </q-page>
 </template>
 
 <script lang="ts">
-import { Todo, Meta } from 'components/models';
-import ExampleComponent from 'components/ClassComponent.vue';
-import { Vue, Options } from 'vue-class-component'
+import { Vue, Options } from 'vue-class-component';
+import { CharacterAttributes } from '../data/models/character';
 
-@Options({
-  components: { ExampleComponent }
-})
+@Options({})
 export default class PageIndex extends Vue {
-  todos: Todo[] = [
-    {
-      id: 1,
-      content: 'ct1'
-    },
-    {
-      id: 2,
-      content: 'ct2'
-    },
-    {
-      id: 3,
-      content: 'ct3'
-    },
-    {
-      id: 4,
-      content: 'ct4'
-    },
-    {
-      id: 5,
-      content: 'ct5'
-    }
-  ];
-  meta: Meta = {
-    totalCount: 1200
-  };
-};
+  ancestry = undefined;
+
+  get attributes() {
+    const data = new CharacterAttributes(10, 10, 10, 10, 10, 10);
+    return data;
+  }
+}
 </script>
