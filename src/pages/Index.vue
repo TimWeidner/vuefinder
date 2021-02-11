@@ -79,6 +79,7 @@ export default class PageIndex extends Vue {
   //Character Selection
   ancestry: Ancestry | null = null;
   abilityBoosts: { ancestry: AbilitySlot[] } = { ancestry: [] };
+  abilityFlaws: { ancestry: AbilitySlot[] } = { ancestry: [] };
 
   sources: Source[] = [CRB];
 
@@ -95,6 +96,17 @@ export default class PageIndex extends Vue {
 
     abilityBoosts.forEach((el) => {
       if (el) this.addAbilityScore(data, el, 'add');
+    });
+
+    let abilityFlaws = [...this.abilityFlaws.ancestry];
+
+    //Add Ancestry Flaw(s)
+    this.ancestry?.abilityFlaws.forEach((el) => {
+      if (el != 'Free') abilityFlaws.push(el);
+    });
+
+    abilityFlaws.forEach((el) => {
+      if (el) this.addAbilityScore(data, el, 'subtract');
     });
 
     return data;
@@ -127,7 +139,7 @@ export default class PageIndex extends Vue {
     mod: 'add' | 'subtract'
   ) {
     let change = 2;
-    if (mod == 'subtract') change * -1;
+    if (mod == 'subtract') change = change * -1;
 
     switch (attr) {
       case 'Strength':
