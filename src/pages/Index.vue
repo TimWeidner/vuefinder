@@ -42,7 +42,7 @@
         label="Ability Boost"
         v-for="(slot, index) in abilityBoosts.ancestry"
         v-model="abilityBoosts.ancestry[index]"
-        :options="ABILITY_OPTIONS"
+        :options="availableAncestryBoons"
         :key="index"
         class="col"
       />
@@ -85,12 +85,36 @@ export default class PageIndex extends Vue {
   get attributes() {
     const data = new CharacterAttributes(10, 10, 10, 10, 10, 10);
 
+    //Add Free Ancestry Boons
     let abilityBoosts = [...this.abilityBoosts.ancestry];
+
+    //Add Ancestry Boons
+    this.ancestry?.abilityBoosts.forEach((el) => {
+      if (el != 'Free') abilityBoosts.push(el);
+    });
+
     abilityBoosts.forEach((el) => {
       if (el) this.addAbilityScore(data, el, 'add');
     });
 
     return data;
+  }
+
+  get availableAncestryBoons() {
+    let boonOptions = <Ability[]>JSON.parse(JSON.stringify(ABILITY_OPTIONS));
+
+    let usedBoons: Ability[] = [];
+    //Add Standard Ancestry Boons to filter
+    this.ancestry?.abilityBoosts.forEach((el) => {
+      if (el != 'Free') usedBoons.push(el);
+    });
+
+    //Add previously selected Ancestry Boons to filter
+    this.abilityBoosts.ancestry.forEach((el) => {
+      if (el) usedBoons.push(el);
+    });
+
+    return boonOptions.filter((el) => !usedBoons.includes(el));
   }
 
   get source() {
