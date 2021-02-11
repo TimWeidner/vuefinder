@@ -2,6 +2,7 @@ import { Ancestry } from '../models/ancestryModels';
 
 export const CRBAncestries: Ancestry[] = [
   new Ancestry(
+    'Dwarf',
     10,
     'Medium',
     20,
@@ -10,4 +11,5 @@ export const CRBAncestries: Ancestry[] = [
     ['Common', 'Dwarven'],
     ['Darkvision']
   ),
+  new Ancestry('Human', 8, 'Medium', 25, ['Free', 'Free'], [], ['Common'], []),
 ];

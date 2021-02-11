@@ -1,6 +1,7 @@
 import { CRBLanguage } from '../coreRuleBook/languages';
 
 export class Ancestry {
+  name: string;
   hitPoints: number;
   size: Size;
   speed: number;
@@ -11,6 +12,7 @@ export class Ancestry {
   ///TODO: ancestryItems
 
   constructor(
+    name: string,
     hp: number,
     size: Size,
     speed: number,
@@ -19,6 +21,7 @@ export class Ancestry {
     l: Language[],
     afeat: AncestryFeature[]
   ) {
+    this.name = name;
     this.hitPoints = hp;
     this.size = size;
     this.speed = speed;
@@ -29,14 +32,17 @@ export class Ancestry {
   }
 }
 
-export type AbilityModifier =
-  | 'Strength'
-  | 'Dexterity'
-  | 'Constitution'
-  | 'Intelligence'
-  | 'Wisdom'
-  | 'Charisma'
-  | 'Free';
+export type AbilityModifier = Ability | 'Free';
+
+export const ABILITY_OPTIONS = [
+  'Strength',
+  'Dexterity',
+  'Constitution',
+  'Intelligence',
+  'Wisdom',
+  'Charisma',
+] as const;
+export type Ability = typeof ABILITY_OPTIONS[number];
 
 export type Size =
   | 'Tiny'
@@ -45,6 +51,8 @@ export type Size =
   | 'Large'
   | 'Huge'
   | 'Gargantuan';
+
+export type AbilitySlot = Ability | null;
 
 export type Language = CRBLanguage;
 
