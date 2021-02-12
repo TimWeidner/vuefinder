@@ -71,6 +71,7 @@ import {
   AbilitySlot,
   Ancestry,
   Ability,
+  AbilityModifier,
 } from 'src/data/models/ancestryModels';
 import { Background } from 'src/data/models/backgroundModels';
 
@@ -102,9 +103,8 @@ export default class PageIndex extends Vue {
     let abilityBoosts = [...this.abilityBoosts.ancestry];
 
     //Add Ancestry Boons
-    this.ancestry?.abilityBoosts.forEach((el) => {
-      if (el != 'Free' && !Array.isArray(el)) abilityBoosts.push(el);
-    });
+    if (this.ancestry)
+      this.pushAbilityModifier(this.ancestry?.abilityBoosts, abilityBoosts);
 
     abilityBoosts.forEach((el) => {
       if (el) this.addAbilityScore(data, el, 'add');
@@ -113,9 +113,8 @@ export default class PageIndex extends Vue {
     let abilityFlaws = [...this.abilityFlaws.ancestry];
 
     //Add Ancestry Flaw(s)
-    this.ancestry?.abilityFlaws.forEach((el) => {
-      if (el != 'Free' && !Array.isArray(el)) abilityFlaws.push(el);
-    });
+    if (this.ancestry)
+      this.pushAbilityModifier(this.ancestry.abilityFlaws, abilityFlaws);
 
     abilityFlaws.forEach((el) => {
       if (el) this.addAbilityScore(data, el, 'subtract');
@@ -129,9 +128,8 @@ export default class PageIndex extends Vue {
 
     let usedBoons: Ability[] = [];
     //Add Standard Ancestry Boons to filter
-    this.ancestry?.abilityBoosts.forEach((el) => {
-      if (el != 'Free' && !Array.isArray(el)) usedBoons.push(el);
-    });
+    if (this.ancestry)
+      this.pushAbilityModifier(this.ancestry.abilityBoosts, usedBoons);
 
     //Add previously selected Ancestry Boons to filter
     this.abilityBoosts.ancestry.forEach((el) => {
@@ -143,6 +141,15 @@ export default class PageIndex extends Vue {
 
   get source() {
     return new Source(CRB.ancestries, CRB.backgrounds, CRB.feats);
+  }
+
+  pushAbilityModifier(
+    source: AbilityModifier[],
+    target: Ability[] | AbilitySlot[]
+  ) {
+    source.forEach((el) => {
+      if (el != 'Free' && !Array.isArray(el)) target.push(el);
+    });
   }
 
   addAbilityScore(
