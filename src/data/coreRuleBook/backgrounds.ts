@@ -11,4 +11,13 @@ export const CRBBackgrounds = [
     ],
     ['Student of the Canon']
   ),
+  new Background(
+    'Acrobat',
+    [['Strength', 'Dexterity'], 'Free'],
+    [
+      new SkillProficiency('Acrobatics', 'Trained'),
+      new SkillProficiency('Lore', 'Trained', 'Circus'),
+    ],
+    ['Steady Balance']
+  ),
 ];
