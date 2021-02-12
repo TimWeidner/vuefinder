@@ -42,7 +42,7 @@
         label="Ability Boost"
         v-for="(slot, index) in abilityBoosts.ancestry"
         v-model="abilityBoosts.ancestry[index]"
-        :options="availableAncestryBoons"
+        :options="availableAncestryBoons[index]"
         :key="index"
         class="col"
       />
@@ -56,6 +56,17 @@
         option-label="name"
         class="col"
         :display-value="background ? background.name : ''"
+      />
+    </div>
+
+    <div class="row q-gutter-md">
+      <q-select
+        label="Ability Boost"
+        v-for="(slot, index) in abilityBoosts.background"
+        v-model="abilityBoosts.background[index]"
+        :options="availableBackgroundBoons[index]"
+        :key="index"
+        class="col"
       />
     </div>
   </q-page>
@@ -84,6 +95,13 @@ import { Background } from 'src/data/models/backgroundModels';
         deep: false,
       },
     ],
+    background: [
+      {
+        handler: 'backgroundChanged',
+        immediate: false,
+        deep: false,
+      },
+    ],
   },
 })
 export default class PageIndex extends Vue {
@@ -91,7 +109,10 @@ export default class PageIndex extends Vue {
   ancestry: Ancestry | null = null;
   background: Background | null = null;
 
-  abilityBoosts: { ancestry: AbilitySlot[] } = { ancestry: [] };
+  abilityBoosts: { ancestry: AbilitySlot[]; background: AbilitySlot[] } = {
+    ancestry: [],
+    background: [],
+  };
   abilityFlaws: { ancestry: AbilitySlot[] } = { ancestry: [] };
 
   sources: Source[] = [CRB];
@@ -100,11 +121,23 @@ export default class PageIndex extends Vue {
     const data = new CharacterAttributes(10, 10, 10, 10, 10, 10);
 
     //Add Free Ancestry Boons
-    let abilityBoosts = [...this.abilityBoosts.ancestry];
+    let abilityBoosts: AbilitySlot[] = [];
 
     //Add Ancestry Boons
+    this.pushAbilityModifier(
+      <AbilityModifier[]>this.abilityBoosts.ancestry,
+      abilityBoosts
+    );
     if (this.ancestry)
       this.pushAbilityModifier(this.ancestry?.abilityBoosts, abilityBoosts);
+
+    //Add Background Boons
+    this.pushAbilityModifier(
+      <AbilityModifier[]>this.abilityBoosts.background,
+      abilityBoosts
+    );
+    if (this.background)
+      this.pushAbilityModifier(this.background.abilityBoosts, abilityBoosts);
 
     abilityBoosts.forEach((el) => {
       if (el) this.addAbilityScore(data, el, 'add');
@@ -124,23 +157,55 @@ export default class PageIndex extends Vue {
   }
 
   get availableAncestryBoons() {
-    let boonOptions = <Ability[]>JSON.parse(JSON.stringify(ABILITY_OPTIONS));
-
-    let usedBoons: Ability[] = [];
-    //Add Standard Ancestry Boons to filter
+    let res: Ability[][] = [];
     if (this.ancestry)
-      this.pushAbilityModifier(this.ancestry.abilityBoosts, usedBoons);
+      res = this.getAvailableBoons(this.ancestry, this.abilityBoosts.ancestry);
+    return res;
+  }
 
-    //Add previously selected Ancestry Boons to filter
-    this.abilityBoosts.ancestry.forEach((el) => {
-      if (el) usedBoons.push(el);
-    });
-
-    return boonOptions.filter((el) => !usedBoons.includes(el));
+  get availableBackgroundBoons() {
+    let res: Ability[][] = [];
+    if (this.background)
+      res = this.getAvailableBoons(
+        this.background,
+        this.abilityBoosts.background
+      );
+    return res;
   }
 
   get source() {
     return new Source(CRB.ancestries, CRB.backgrounds, CRB.feats);
+  }
+
+  getAvailableBoons(src: Ancestry | Background, choice: AbilitySlot[]) {
+    let options: Ability[][] = [];
+    let boonOptions = [...ABILITY_OPTIONS];
+
+    src?.abilityBoosts.forEach((el) => {
+      if (Array.isArray(el)) options.push(el);
+    });
+    let remainingOptions = src?.abilityBoosts.length - options.length;
+
+    for (let i = 0; i < remainingOptions; i++) {
+      options.push(boonOptions);
+    }
+
+    let usedBoons: Ability[] = [];
+
+    //Add standard Ancestry / Background Boons to filter
+    if (src) this.pushAbilityModifier(src.abilityBoosts, usedBoons);
+
+    //add previously selected Boons to filter
+    choice.forEach((el) => {
+      if (el) usedBoons.push(el);
+    });
+
+    let filteredOptions: Ability[][] = [];
+    options.forEach((el) => {
+      filteredOptions.push(el.filter((opt) => !usedBoons.includes(opt)));
+    });
+
+    return filteredOptions;
   }
 
   pushAbilityModifier(
@@ -199,6 +264,18 @@ export default class PageIndex extends Vue {
         .filter((el) => el == 'Free')
         .forEach(() => slots.push(null));
       this.abilityBoosts.ancestry = slots;
+    }
+  }
+  backgroundChanged(
+    newBackground: Background,
+    oldBackground: Background | null
+  ) {
+    if (newBackground != oldBackground) {
+      let slots: AbilitySlot[] = [];
+      this.background?.abilityBoosts
+        .filter((el) => 'Free' || Array.isArray(el))
+        .forEach(() => slots.push(null));
+      this.abilityBoosts.background = slots;
     }
   }
 }
