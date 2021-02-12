@@ -32,7 +32,7 @@ export class Ancestry {
   }
 }
 
-export type AbilityModifier = Ability | 'Free';
+export type AbilityModifier = Ability | 'Free' | Ability[];
 
 export const ABILITY_OPTIONS = [
   'Strength',

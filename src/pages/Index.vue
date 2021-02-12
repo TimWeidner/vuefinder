@@ -1,5 +1,5 @@
 <template>
-  <q-page class="q-pa-md">
+  <q-page class="q-pa-md q-gutter-md">
     <div class="row q-gutter-md">
       <q-card class="col">
         <q-card-section>Strength</q-card-section>
@@ -47,6 +47,17 @@
         class="col"
       />
     </div>
+
+    <div class="row q-gutter-md">
+      <q-select
+        label="Background"
+        v-model="background"
+        :options="source.backgrounds"
+        option-label="name"
+        class="col"
+        :display-value="background ? background.name : ''"
+      />
+    </div>
   </q-page>
 </template>
 
@@ -61,6 +72,7 @@ import {
   Ancestry,
   Ability,
 } from 'src/data/models/ancestryModels';
+import { Background } from 'src/data/models/backgroundModels';
 
 @Options({
   watch: {
@@ -74,10 +86,10 @@ import {
   },
 })
 export default class PageIndex extends Vue {
-  ABILITY_OPTIONS = ABILITY_OPTIONS;
-
   //Character Selection
   ancestry: Ancestry | null = null;
+  background: Background | null = null;
+
   abilityBoosts: { ancestry: AbilitySlot[] } = { ancestry: [] };
   abilityFlaws: { ancestry: AbilitySlot[] } = { ancestry: [] };
 
@@ -91,7 +103,7 @@ export default class PageIndex extends Vue {
 
     //Add Ancestry Boons
     this.ancestry?.abilityBoosts.forEach((el) => {
-      if (el != 'Free') abilityBoosts.push(el);
+      if (el != 'Free' && !Array.isArray(el)) abilityBoosts.push(el);
     });
 
     abilityBoosts.forEach((el) => {
@@ -102,7 +114,7 @@ export default class PageIndex extends Vue {
 
     //Add Ancestry Flaw(s)
     this.ancestry?.abilityFlaws.forEach((el) => {
-      if (el != 'Free') abilityFlaws.push(el);
+      if (el != 'Free' && !Array.isArray(el)) abilityFlaws.push(el);
     });
 
     abilityFlaws.forEach((el) => {
@@ -118,7 +130,7 @@ export default class PageIndex extends Vue {
     let usedBoons: Ability[] = [];
     //Add Standard Ancestry Boons to filter
     this.ancestry?.abilityBoosts.forEach((el) => {
-      if (el != 'Free') usedBoons.push(el);
+      if (el != 'Free' && !Array.isArray(el)) usedBoons.push(el);
     });
 
     //Add previously selected Ancestry Boons to filter
@@ -130,7 +142,7 @@ export default class PageIndex extends Vue {
   }
 
   get source() {
-    return new Source(CRB.ancestries);
+    return new Source(CRB.ancestries, CRB.backgrounds, CRB.feats);
   }
 
   addAbilityScore(
