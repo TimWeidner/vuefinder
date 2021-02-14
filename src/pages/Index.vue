@@ -2,6 +2,12 @@
   <q-page class="q-pa-md q-gutter-md">
     <div class="row q-gutter-md">
       <q-card class="col">
+        <q-card-section>Hit Points</q-card-section>
+        <q-card-section>{{ hitPoints }}</q-card-section>
+      </q-card>
+    </div>
+    <div class="row q-gutter-md">
+      <q-card class="col">
         <q-card-section>Strength</q-card-section>
         <q-card-section>{{ attributes.strength }}</q-card-section>
       </q-card>
@@ -69,6 +75,17 @@
         class="col"
       />
     </div>
+
+    <div class="row q-gutter-md">
+      <q-select
+        label="Class"
+        v-model="characterClass"
+        :options="source.classes"
+        option-label="name"
+        class="col"
+        :display-value="characterClass ? characterClass.name : ''"
+      />
+    </div>
   </q-page>
 </template>
 
@@ -85,6 +102,7 @@ import {
   AbilityModifier,
 } from 'src/data/models/ancestryModels';
 import { Background } from 'src/data/models/backgroundModels';
+import { Class } from 'src/data/models/classModels';
 
 @Options({
   watch: {
@@ -106,8 +124,11 @@ import { Background } from 'src/data/models/backgroundModels';
 })
 export default class PageIndex extends Vue {
   //Character Selection
+
+  level = 1;
   ancestry: Ancestry | null = null;
   background: Background | null = null;
+  characterClass: Class | null = null;
 
   abilityBoosts: { ancestry: AbilitySlot[]; background: AbilitySlot[] } = {
     ancestry: [],
@@ -116,6 +137,19 @@ export default class PageIndex extends Vue {
   abilityFlaws: { ancestry: AbilitySlot[] } = { ancestry: [] };
 
   sources: Source[] = [CRB];
+
+  get hitPoints() {
+    let hp = 0;
+
+    if (this.ancestry) hp += this.ancestry.hitPoints;
+
+    if (this.characterClass)
+      hp +=
+        this.level *
+        (this.characterClass.hitPoints + this.attributeModifiers.constitution);
+
+    return hp;
+  }
 
   get attributes() {
     const data = new CharacterAttributes(10, 10, 10, 10, 10, 10);
@@ -139,6 +173,10 @@ export default class PageIndex extends Vue {
     if (this.background)
       this.pushAbilityModifier(this.background.abilityBoosts, abilityBoosts);
 
+    //Add Class Boons
+    if (this.characterClass)
+      this.pushAbilityModifier(this.characterClass.keyAbility, abilityBoosts);
+
     abilityBoosts.forEach((el) => {
       if (el) this.addAbilityScore(data, el, 'add');
     });
@@ -154,6 +192,22 @@ export default class PageIndex extends Vue {
     });
 
     return data;
+  }
+
+  get attributeModifiers() {
+    let modifiers = {
+      strength: this.calculateModifier(this.attributes.strength),
+      dexterity: this.calculateModifier(this.attributes.dexterity),
+      constitution: this.calculateModifier(this.attributes.constitution),
+      intelligence: this.calculateModifier(this.attributes.intelligence),
+      wisdom: this.calculateModifier(this.attributes.wisdom),
+      charisma: this.calculateModifier(this.attributes.charisma),
+    };
+    return modifiers;
+  }
+
+  calculateModifier(attr: number) {
+    return (attr - 10) / 2;
   }
 
   get availableAncestryBoons() {
@@ -174,7 +228,7 @@ export default class PageIndex extends Vue {
   }
 
   get source() {
-    return new Source(CRB.ancestries, CRB.backgrounds, CRB.feats);
+    return new Source(CRB.ancestries, CRB.backgrounds, CRB.feats, CRB.classes);
   }
 
   getAvailableBoons(src: Ancestry | Background, choice: AbilitySlot[]) {

@@ -1,22 +1,25 @@
 import { Ability } from './ancestryModels';
 
 export class SkillProficiency {
-  name: Skill;
+  name: Skill | SavingThrow | number | 'Deity';
   trainingLevel: TrainingLevel;
   custom?: string;
 
-  constructor(n: Skill, t: TrainingLevel, c?: string) {
+  constructor(
+    n: Skill | SavingThrow | number | 'Deity',
+    t: TrainingLevel,
+    c?: string
+  ) {
     this.name = n;
     this.trainingLevel = t;
     if (c) this.custom = c;
   }
 }
-
 export class SkillOption {
-  name: Skill;
+  name: Skill | SavingThrow;
   keyAbility: Ability;
 
-  constructor(n: Skill, kA: Ability) {
+  constructor(n: Skill | SavingThrow, kA: Ability) {
     this.name = n;
     this.keyAbility = kA;
   }
@@ -62,6 +65,15 @@ export const SKILLS = [
   'Thievery',
 ] as const;
 export type Skill = typeof SKILLS[number];
+
+export const SAVINGTHROWS = ['Fortitude', 'Reflex', 'Will'] as const;
+export type SavingThrow = typeof SAVINGTHROWS[number];
+
+export const SAVINGTHROW_OPTIONS = [
+  new SkillOption('Fortitude', 'Constitution'),
+  new SkillOption('Reflex', 'Dexterity'),
+  new SkillOption('Will', 'Wisdom'),
+];
 
 export const TRAINING_LEVELS = [
   'Untrained',
