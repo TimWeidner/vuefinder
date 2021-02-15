@@ -1,91 +1,119 @@
 <template>
-  <q-page class="q-pa-md q-gutter-md">
-    <div class="row q-gutter-md">
-      <q-card class="col">
-        <q-card-section>Hit Points</q-card-section>
-        <q-card-section>{{ hitPoints }}</q-card-section>
-      </q-card>
-    </div>
-    <div class="row q-gutter-md">
-      <q-card class="col">
-        <q-card-section>Strength</q-card-section>
-        <q-card-section>{{ attributes.strength }}</q-card-section>
-      </q-card>
-      <q-card class="col">
-        <q-card-section>Dexterity</q-card-section>
-        <q-card-section>{{ attributes.dexterity }}</q-card-section>
-      </q-card>
-      <q-card class="col">
-        <q-card-section>Constitution</q-card-section>
-        <q-card-section>{{ attributes.constitution }}</q-card-section>
-      </q-card>
-      <q-card class="col">
-        <q-card-section>Intelligence</q-card-section>
-        <q-card-section>{{ attributes.intelligence }}</q-card-section>
-      </q-card>
-      <q-card class="col">
-        <q-card-section>Wisdom</q-card-section>
-        <q-card-section>{{ attributes.wisdom }}</q-card-section>
-      </q-card>
-      <q-card class="col">
-        <q-card-section>Charisma</q-card-section>
-        <q-card-section>{{ attributes.charisma }}</q-card-section>
-      </q-card>
-    </div>
+  <q-page>
+    <q-tabs v-model="tabs">
+      <q-tab name="creation" label="Creation" />
+      <q-tab name="skills" label="Skills" />
+    </q-tabs>
 
-    <div class="row q-gutter-md">
-      <q-select
-        label="Ancestry"
-        v-model="ancestry"
-        :options="source.ancestries"
-        option-label="name"
-        class="col"
-        :display-value="ancestry ? ancestry.name : ''"
-      />
-    </div>
-    <div class="row q-gutter-md">
-      <q-select
-        label="Ability Boost"
-        v-for="(slot, index) in abilityBoosts.ancestry"
-        v-model="abilityBoosts.ancestry[index]"
-        :options="availableAncestryBoons[index]"
-        :key="index"
-        class="col"
-      />
-    </div>
+    <q-tab-panels v-model="tabs">
+      <q-tab-panel name="creation" class="q-gutter-md q-pa-md">
+        <div class="row q-gutter-md">
+          <q-card class="col">
+            <q-card-section>Hit Points</q-card-section>
+            <q-card-section>{{ hitPoints }}</q-card-section>
+          </q-card>
+        </div>
+        <div class="row q-gutter-md">
+          <q-card class="col">
+            <q-card-section>Strength</q-card-section>
+            <q-card-section>{{ attributes.strength }}</q-card-section>
+          </q-card>
+          <q-card class="col">
+            <q-card-section>Dexterity</q-card-section>
+            <q-card-section>{{ attributes.dexterity }}</q-card-section>
+          </q-card>
+          <q-card class="col">
+            <q-card-section>Constitution</q-card-section>
+            <q-card-section>{{ attributes.constitution }}</q-card-section>
+          </q-card>
+          <q-card class="col">
+            <q-card-section>Intelligence</q-card-section>
+            <q-card-section>{{ attributes.intelligence }}</q-card-section>
+          </q-card>
+          <q-card class="col">
+            <q-card-section>Wisdom</q-card-section>
+            <q-card-section>{{ attributes.wisdom }}</q-card-section>
+          </q-card>
+          <q-card class="col">
+            <q-card-section>Charisma</q-card-section>
+            <q-card-section>{{ attributes.charisma }}</q-card-section>
+          </q-card>
+        </div>
 
-    <div class="row q-gutter-md">
-      <q-select
-        label="Background"
-        v-model="background"
-        :options="source.backgrounds"
-        option-label="name"
-        class="col"
-        :display-value="background ? background.name : ''"
-      />
-    </div>
+        <div class="row q-gutter-md">
+          <q-select
+            label="Ancestry"
+            v-model="ancestry"
+            :options="source.ancestries"
+            option-label="name"
+            class="col"
+            :display-value="ancestry ? ancestry.name : ''"
+          />
+        </div>
+        <div class="row q-gutter-md">
+          <q-select
+            label="Ability Boost"
+            v-for="(slot, index) in abilityBoosts.ancestry"
+            v-model="abilityBoosts.ancestry[index]"
+            :options="availableAncestryBoons[index]"
+            :key="index"
+            class="col"
+          />
+        </div>
 
-    <div class="row q-gutter-md">
-      <q-select
-        label="Ability Boost"
-        v-for="(slot, index) in abilityBoosts.background"
-        v-model="abilityBoosts.background[index]"
-        :options="availableBackgroundBoons[index]"
-        :key="index"
-        class="col"
-      />
-    </div>
+        <div class="row q-gutter-md">
+          <q-select
+            label="Background"
+            v-model="background"
+            :options="source.backgrounds"
+            option-label="name"
+            class="col"
+            :display-value="background ? background.name : ''"
+          />
+        </div>
 
-    <div class="row q-gutter-md">
-      <q-select
-        label="Class"
-        v-model="characterClass"
-        :options="source.classes"
-        option-label="name"
-        class="col"
-        :display-value="characterClass ? characterClass.name : ''"
-      />
-    </div>
+        <div class="row q-gutter-md">
+          <q-select
+            label="Ability Boost"
+            v-for="(slot, index) in abilityBoosts.background"
+            v-model="abilityBoosts.background[index]"
+            :options="availableBackgroundBoons[index]"
+            :key="index"
+            class="col"
+          />
+        </div>
+
+        <div class="row q-gutter-md">
+          <q-select
+            label="Class"
+            v-model="characterClass"
+            :options="source.classes"
+            option-label="name"
+            class="col"
+            :display-value="characterClass ? characterClass.name : ''"
+          />
+        </div>
+      </q-tab-panel>
+      <q-tab-panel name="skills" class="q-gutter-md q-pa-md">
+        <q-list bordered>
+          <q-item v-for="skill in skillArray" :key="skill.name">
+            <q-item-section>
+              <q-item-label>
+                {{ skill.name }}
+              </q-item-label>
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>
+                {{ skill.value }}
+              </q-item-label>
+            </q-item-section>
+            <q-item-section>
+              {{ skill.training }}
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-tab-panel>
+    </q-tab-panels>
   </q-page>
 </template>
 
@@ -103,6 +131,17 @@ import {
 } from 'src/data/models/ancestryModels';
 import { Background } from 'src/data/models/backgroundModels';
 import { Class } from 'src/data/models/classModels';
+import {
+  Skill,
+  SkillEntry,
+  SkillProficiency,
+  SKILLS,
+  SKILL_OPTIONS,
+} from 'src/data/models/skillModels';
+import {
+  mapUppercaseToLowercase,
+  trainingProficiency,
+} from 'src/scripts/skills';
 
 @Options({
   watch: {
@@ -123,8 +162,9 @@ import { Class } from 'src/data/models/classModels';
   },
 })
 export default class PageIndex extends Vue {
-  //Character Selection
+  tabs = 'creation';
 
+  //Character Selection
   level = 1;
   ancestry: Ancestry | null = null;
   background: Background | null = null;
@@ -225,6 +265,81 @@ export default class PageIndex extends Vue {
         this.abilityBoosts.background
       );
     return res;
+  }
+
+  get skillArray() {
+    const skillProficiencies: SkillProficiency[] = [];
+    const skillEntries: SkillEntry[] = [];
+
+    const classSkills: SkillProficiency[] = [];
+    if (this.characterClass)
+      this.characterClass.progress.forEach((level) => {
+        if (level.skills)
+          level.skills
+            .filter((skill) => SKILLS.includes(<Skill>skill.name.toString()))
+            .forEach((skill) => {
+              classSkills.push(
+                new SkillProficiency(
+                  skill.name,
+                  skill.trainingLevel,
+                  skill.custom
+                )
+              );
+            });
+      });
+
+    skillProficiencies.push(...classSkills);
+
+    skillProficiencies.sort((a, b) => {
+      if (a.name < b.name) return -1;
+      if (a.name > b.name) return 1;
+      return 0;
+    });
+
+    SKILLS.forEach((el) => {
+      let array = skillProficiencies
+        .filter((prof) => prof.name == el)
+        .sort((a, b) => {
+          let tPa = trainingProficiency(a.trainingLevel);
+          let tPb = trainingProficiency(b.trainingLevel);
+          if (tPa > tPb) return -1;
+          if (tPa < tPb) return 1;
+          return 0;
+        });
+      if (array.length > 0) {
+        let keyAbility = SKILL_OPTIONS.find((opt) => opt.name == array[0].name)
+          ?.keyAbility;
+
+        if (keyAbility) {
+          skillEntries.push(
+            new SkillEntry(
+              <Skill>array[0].name,
+              keyAbility,
+              this.attributes[mapUppercaseToLowercase(keyAbility)],
+              array[0].trainingLevel,
+              trainingProficiency(array[0].trainingLevel),
+              0
+            )
+          );
+        }
+      } else {
+        let keyAbility = SKILL_OPTIONS.find((opt) => opt.name == el)
+          ?.keyAbility;
+        if (keyAbility)
+          skillEntries.push(
+            new SkillEntry(
+              el,
+              keyAbility,
+              this.attributes[mapUppercaseToLowercase(keyAbility)],
+              'Untrained',
+              0,
+              0
+            )
+          );
+      }
+    });
+
+    return skillEntries;
   }
 
   get source() {
