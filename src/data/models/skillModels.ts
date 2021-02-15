@@ -1,5 +1,6 @@
 import { Ability } from './ancestryModels';
 
+//TODO: This can't stay like this
 export class SkillProficiency {
   name: Skill | SavingThrow | number | 'Deity';
   trainingLevel: TrainingLevel;
@@ -83,3 +84,30 @@ export const TRAINING_LEVELS = [
   'Legendary',
 ] as const;
 export type TrainingLevel = typeof TRAINING_LEVELS[number];
+
+export class SkillEntry {
+  name: Skill;
+  ability: Ability;
+  attributeBonus: number;
+  training: TrainingLevel;
+  trainingBonus: number;
+  other: number;
+  value: number;
+
+  constructor(
+    n: Skill,
+    ability: Ability,
+    attributeBonus: number,
+    training: TrainingLevel,
+    tB: number,
+    other: number
+  ) {
+    this.name = n;
+    this.ability = ability;
+    this.attributeBonus = attributeBonus;
+    this.training = training;
+    this.trainingBonus = tB;
+    this.other = other;
+    this.value = attributeBonus + tB + other;
+  }
+}
