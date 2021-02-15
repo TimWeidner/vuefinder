@@ -30,3 +30,5 @@ export function mapUppercaseToLowercase(ability: Ability) {
       return 'charisma';
   }
 }
+
+export const calculateModifier = (attr: number) => (attr - 10) / 2;

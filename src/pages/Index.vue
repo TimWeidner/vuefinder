@@ -104,11 +104,32 @@
             </q-item-section>
             <q-item-section>
               <q-item-label>
-                {{ skill.value }}
+                {{ skill.value >= 0 ? '+' + skill.value : skill.value }}
               </q-item-label>
             </q-item-section>
             <q-item-section>
-              {{ skill.training }}
+              <q-item-label>
+                {{ skill.training }}
+              </q-item-label>
+              <q-item-label caption>Proficiency</q-item-label>
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>
+                {{
+                  skill.attributeBonus >= 0
+                    ? '+' + skill.attributeBonus
+                    : skill.attributeBonus
+                }}
+              </q-item-label>
+              <q-item-label caption>{{ skill.ability }} Bonus</q-item-label>
+            </q-item-section>
+            <q-item-section>
+              <q-item-label> +{{ skill.trainingBonus }} </q-item-label>
+              <q-item-label caption>Proficiency Bonus</q-item-label>
+            </q-item-section>
+            <q-item-section>
+              <q-item-label> +{{ skill.other }} </q-item-label>
+              <q-item-label caption>Other Bonus</q-item-label>
             </q-item-section>
           </q-item>
         </q-list>
@@ -139,6 +160,7 @@ import {
   SKILL_OPTIONS,
 } from 'src/data/models/skillModels';
 import {
+  calculateModifier,
   mapUppercaseToLowercase,
   trainingProficiency,
 } from 'src/scripts/skills';
@@ -236,18 +258,14 @@ export default class PageIndex extends Vue {
 
   get attributeModifiers() {
     let modifiers = {
-      strength: this.calculateModifier(this.attributes.strength),
-      dexterity: this.calculateModifier(this.attributes.dexterity),
-      constitution: this.calculateModifier(this.attributes.constitution),
-      intelligence: this.calculateModifier(this.attributes.intelligence),
-      wisdom: this.calculateModifier(this.attributes.wisdom),
-      charisma: this.calculateModifier(this.attributes.charisma),
+      strength: calculateModifier(this.attributes.strength),
+      dexterity: calculateModifier(this.attributes.dexterity),
+      constitution: calculateModifier(this.attributes.constitution),
+      intelligence: calculateModifier(this.attributes.intelligence),
+      wisdom: calculateModifier(this.attributes.wisdom),
+      charisma: calculateModifier(this.attributes.charisma),
     };
     return modifiers;
-  }
-
-  calculateModifier(attr: number) {
-    return (attr - 10) / 2;
   }
 
   get availableAncestryBoons() {
@@ -315,9 +333,9 @@ export default class PageIndex extends Vue {
             new SkillEntry(
               <Skill>array[0].name,
               keyAbility,
-              this.attributes[mapUppercaseToLowercase(keyAbility)],
+              this.attributeModifiers[mapUppercaseToLowercase(keyAbility)],
               array[0].trainingLevel,
-              trainingProficiency(array[0].trainingLevel),
+              trainingProficiency(array[0].trainingLevel) + this.level,
               0
             )
           );
@@ -330,7 +348,7 @@ export default class PageIndex extends Vue {
             new SkillEntry(
               el,
               keyAbility,
-              this.attributes[mapUppercaseToLowercase(keyAbility)],
+              this.attributeModifiers[mapUppercaseToLowercase(keyAbility)],
               'Untrained',
               0,
               0
